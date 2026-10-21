@@ -8,6 +8,7 @@
 
 package org.team1507.robot.subsystems;
 
+import org.wpilib.command3.Command;
 import org.wpilib.xrp.XRPRangefinder;
 import org.wpilib.xrp.XRPReflectanceSensor;
 
@@ -26,6 +27,9 @@ import org.team1507.lib.core.framework.Subsystem1507;
 //   anyone else from reading it, so many commands can read these at once.
 //
 // The gyro is NOT here: it belongs to the Drivetrain (see Drivetrain).
+//
+// COMMANDS: waitUntilRange() and waitUntilMarker() only WAIT. They require
+// nothing, so they can run alongside a drive command and end it in a race.
 // ─────────────────────────────────────────────────────────────────────────────
 public final class Sensors extends Subsystem1507 {
 
@@ -67,6 +71,20 @@ public final class Sensors extends Subsystem1507 {
      */
     public boolean isOnMarker(double threshold) {
         return getLeftReflectance() > threshold && getRightReflectance() > threshold;
+    }
+
+    // =========================================================================
+    // Commands (Commands v3): waits that require nothing
+    // =========================================================================
+
+    /** Ends when something is {@code meters} or closer in front of the rangefinder. */
+    public Command waitUntilRange(double meters) {
+        return Command.waitUntil(() -> getRangeMeters() <= meters).named("Sensors.waitUntilRange");
+    }
+
+    /** Ends when both reflectance sensors read above {@code threshold} (see {@link #isOnMarker}). */
+    public Command waitUntilMarker(double threshold) {
+        return Command.waitUntil(() -> isOnMarker(threshold)).named("Sensors.waitUntilMarker");
     }
 
     // =========================================================================

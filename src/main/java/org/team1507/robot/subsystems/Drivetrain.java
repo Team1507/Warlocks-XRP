@@ -8,12 +8,20 @@
 
 package org.team1507.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
+import org.wpilib.command3.Command;
+import org.wpilib.command3.Coroutine;
 import org.wpilib.drive.DifferentialDrive;
 import org.wpilib.hardware.rotation.Encoder;
+import org.wpilib.math.controller.PIDController;
+import org.wpilib.math.util.MathUtil;
+import org.wpilib.system.Timer;
 import org.wpilib.xrp.XRPGyro;
 import org.wpilib.xrp.XRPMotor;
 
 import org.team1507.lib.core.framework.Subsystem1507;
+import org.team1507.robot.Constants;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Drivetrain
@@ -39,6 +47,19 @@ import org.team1507.lib.core.framework.Subsystem1507;
 //     tankDriveLinear()           line following: exact wheel speeds
 //     turnInPlace()               auto turns: no boost at all, so the turn
 //                                 can slow down and settle on the target
+//
+// COMMANDS (Commands v3, bottom of this file):
+//   drive(...)            teleop joystick driving (runs until interrupted)
+//   driveStraight(speed)  holds the starting heading, runs until interrupted
+//   followLine(...)       follows black tape, runs until interrupted
+//   turnByAngle(deg)      turns relative to where it's facing now, then ends
+//   turnToAngle(deg)      turns to an absolute heading, then ends
+//   waitUntilStopped()    holds the motors at 0 until the wheels stop
+//   waitUntilDistance(m)  waits for the wheels to travel m (doesn't drive)
+//   stop()                motors to 0, then ends
+//   idle()                the default: motors to 0, then waits forever
+// "Runs until interrupted" commands are meant to be raced against a wait
+// (see AutoSequence), the same way 2026's ParallelRaceGroups were.
 // ─────────────────────────────────────────────────────────────────────────────
 public final class Drivetrain extends Subsystem1507 {
 
@@ -56,6 +77,31 @@ public final class Drivetrain extends Subsystem1507 {
 
     /** arcadeDriveWithCorrection boosts any forward speed to at least this much power. */
     private static final double MIN_FORWARD_OUTPUT = 0.65;
+
+    // -------------------------------------------------------------------------
+    // Tuning (moves to Constants.kDrivetrain.kTuning in a later commit)
+    // -------------------------------------------------------------------------
+
+    /** Heading-hold PID for driveStraight. */
+    private static final double HEADING_KP = 0.002;
+    private static final double HEADING_KI = 0.0;
+    private static final double HEADING_KD = 0.001;
+
+    /** Turn commands: power per degree of error, and the floor and ceiling on that power. */
+    private static final double TURN_KP = 0.015;
+    private static final double MIN_TURN_SPEED = 0.5;
+    private static final double MAX_TURN_SPEED = 0.9;
+
+    /** A turn is done when the heading is within this many degrees of the target. */
+    private static final double TURN_TOLERANCE_DEG = 5.0;
+
+    /** A turn gives up after this long, so a robot stuck against a wall can't freeze an auto. */
+    private static final double MAX_TURN_SECONDS = 3.0;
+
+    /** Line-following PID, on (right reflectance − left reflectance). */
+    private static final double LINE_KP = 0.5;
+    private static final double LINE_KI = 0.0;
+    private static final double LINE_KD = 0.05;
 
     // -------------------------------------------------------------------------
     // Hardware
@@ -90,8 +136,8 @@ public final class Drivetrain extends Subsystem1507 {
         resetEncoders();
 
         // Safety OFF: motor safety stops the motors if they aren't updated every
-        // loop. Switching modes leaves a short gap that tripped it and made the
-        // robot stutter, so it stays off. That is why every command below sets
+        // loop. Switching modes leaves a short gap that tripped the safety
+        // watchdog, so it stays off. That is why every command below sets
         // the motors to 0 itself when it ends.
         diffDrive.setSafetyEnabled(false);
 
@@ -202,6 +248,178 @@ public final class Drivetrain extends Subsystem1507 {
 
     /** Makes the direction the robot faces right now read as 0°. */
     public void resetHeading() { gyro.reset(); }
+
+    /**
+     * How far the robot must turn to face {@code targetDegrees}, wrapped to
+     * -180..180 so it always turns the short way. (Turning from 350° to 10°
+     * is +20°, not -340°.)
+     */
+    public double headingErrorTo(double targetDegrees) {
+        return MathUtil.inputModulus(targetDegrees - getHeading(), -180.0, 180.0);
+    }
+
+    // =========================================================================
+    // Commands (Commands v3)
+    //
+    // Every command is named "Drivetrain.<action>" so logs and the scheduler
+    // say exactly what is running. Every loop calls coroutine.yield(): that
+    // hands control back to the scheduler for the rest of this 20 ms loop. A
+    // loop WITHOUT yield() never gives control back, and the whole robot
+    // program freezes (including the disable button's effect on commands).
+    //
+    // With motor safety off, a canceled command must stop the motors itself:
+    // that's what .whenCanceled(this::stopMotors) is for.
+    // =========================================================================
+
+    /**
+     * Teleop arcade driving from two suppliers (e.g. joystick axes). Runs until
+     * interrupted. runRepeatedly() calls the lambda once every loop and yields
+     * for you.
+     */
+    public Command drive(DoubleSupplier forward, DoubleSupplier rotation) {
+        return runRepeatedly(() -> arcadeDrive(forward.getAsDouble(), rotation.getAsDouble()))
+            .whenCanceled(this::stopMotors)
+            .named("Drivetrain.drive");
+    }
+
+    /**
+     * Drives at {@code speed} while holding the heading it had when it started.
+     * Never finishes on its own: race it against a wait (AutoSequence does).
+     *
+     * <p>The PID controller is created INSIDE the command, so each run starts
+     * fresh. (A bug we hit: a controller kept between runs carried leftover
+     * state from the last run into the next one.)
+     *
+     * @param speed forward power [-1, 1], negative drives backward
+     */
+    public Command driveStraight(double speed) {
+        return run(coroutine -> {
+            PIDController headingPid = new PIDController(HEADING_KP, HEADING_KI, HEADING_KD);
+            headingPid.enableContinuousInput(-180, 180);
+            headingPid.setSetpoint(getHeading());
+
+            while (true) {
+                double correction = headingPid.calculate(getHeading());
+                arcadeDriveWithCorrection(speed, correction);
+                coroutine.yield();
+            }
+        }).whenCanceled(this::stopMotors).named("Drivetrain.driveStraight");
+    }
+
+    /**
+     * Follows a black tape line with the two reflectance sensors. Never finishes
+     * on its own: race it against a wait (e.g. the end-of-line marker).
+     *
+     * <p>Steers by speeding up one side, never by slowing the other, so both
+     * wheels stay at or above {@code baseSpeed} and the robot never stalls.
+     * Like driveStraight, the PID is new on every run.
+     *
+     * @param sensors   where to read reflectance (read only, not required)
+     * @param baseSpeed power for both wheels, raised to at least Constants.Drive.MIN_SPEED
+     */
+    public Command followLine(Sensors sensors, double baseSpeed) {
+        double base = Math.max(Constants.Drive.MIN_SPEED, Math.abs(baseSpeed));
+        return run(coroutine -> {
+            PIDController linePid = new PIDController(LINE_KP, LINE_KI, LINE_KD);
+
+            while (true) {
+                double error = sensors.getRightReflectance() - sensors.getLeftReflectance();
+                double correction = linePid.calculate(error, 0.0);
+                double left  = Math.min(1.0, base + Math.max(0,  correction));
+                double right = Math.min(1.0, base + Math.max(0, -correction));
+                tankDriveLinear(left, right);
+                coroutine.yield();
+            }
+        }).whenCanceled(this::stopMotors).named("Drivetrain.followLine");
+    }
+
+    /**
+     * Turns in place by {@code degrees} from wherever the robot faces when the
+     * command starts (+90 = a quarter turn left, -90 = right), then ends.
+     */
+    public Command turnByAngle(double degrees) {
+        return run(coroutine -> turnToHeading(coroutine, getHeading() + degrees))
+            .whenCanceled(this::stopMotors)
+            .named("Drivetrain.turnByAngle");
+    }
+
+    /** Turns in place to face {@code degrees} (absolute: 0 = the way it faced at startup), then ends. */
+    public Command turnToAngle(double degrees) {
+        return run(coroutine -> turnToHeading(coroutine, degrees))
+            .whenCanceled(this::stopMotors)
+            .named("Drivetrain.turnToAngle");
+    }
+
+    /**
+     * The turn loop shared by turnByAngle and turnToAngle. Proportional
+     * control: the farther from the target, the faster it turns.
+     *
+     * <p>Two bugs this avoids (both happened on the 2026 XRP):
+     * <ul>
+     *   <li>It uses {@link #turnInPlace}, which does NOT boost small outputs. With
+     *       the boost, every correction became 65%+ power, so the robot could
+     *       never settle precisely on the target.</li>
+     *   <li>The error is wrapped to ±180° (headingErrorTo) both in the loop AND in
+     *       the "am I done" check, so the robot turns the short way and stops.</li>
+     * </ul>
+     */
+    private void turnToHeading(Coroutine coroutine, double targetDegrees) {
+        double start = Timer.getTimestamp();
+
+        while (Math.abs(headingErrorTo(targetDegrees)) >= TURN_TOLERANCE_DEG) {
+            if (Timer.getTimestamp() - start > MAX_TURN_SECONDS) {
+                warn("Turn gave up after " + MAX_TURN_SECONDS + " s (stuck, or the gyro isn't reading)");
+                break;
+            }
+            double error = headingErrorTo(targetDegrees);
+            double speed = Math.clamp(TURN_KP * error, -MAX_TURN_SPEED, MAX_TURN_SPEED);
+            // Too little power and the XRP doesn't move at all (static friction).
+            if (Math.abs(speed) < MIN_TURN_SPEED) {
+                speed = Math.copySign(MIN_TURN_SPEED, speed);
+            }
+            turnInPlace(speed);
+            coroutine.yield();
+        }
+        turnInPlace(0);
+    }
+
+    /** Holds the motors at 0 and ends once the wheels have stopped turning. */
+    public Command waitUntilStopped() {
+        return run(coroutine -> {
+            stopMotors();
+            coroutine.waitUntil(this::isStopped);
+        }).named("Drivetrain.waitUntilStopped");
+    }
+
+    /**
+     * Ends once the wheels have traveled {@code meters} (average of both sides,
+     * either direction) since this command started. Doesn't drive and doesn't
+     * require the drivetrain, so it can run alongside driveStraight.
+     */
+    public Command waitUntilDistance(double meters) {
+        return Command.noRequirements(coroutine -> {
+            double start = getAverageDistance();
+            coroutine.waitUntil(() -> Math.abs(getAverageDistance() - start) >= Math.abs(meters));
+        }).named("Drivetrain.waitUntilDistance");
+    }
+
+    /** Sets the motors to 0 and ends at once. */
+    public Command stop() {
+        return run(coroutine -> stopMotors()).named("Drivetrain.stop");
+    }
+
+    /**
+     * What the drivetrain does when no command is using it: motors to 0, then
+     * wait forever (park) at the lowest priority, so any other command can take
+     * over. Robot.java makes this the default.
+     */
+    @Override
+    public Command idle() {
+        return run(coroutine -> {
+            stopMotors();
+            coroutine.park();
+        }).withPriority(Command.LOWEST_PRIORITY).named("Drivetrain.idle");
+    }
 
     // =========================================================================
     // Periodic
