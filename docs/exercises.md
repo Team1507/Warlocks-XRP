@@ -1,5 +1,7 @@
 # Exercises
 
+> **Replaced by the [wiki lessons](https://github.com/Team1507/Warlocks-XRP/wiki).** Do those instead. These older exercises are kept only for the wiki's two Extra lessons (Robot Behaviors: exercise 6; Build a Subsystem: exercise 7), until those get their own pages. Some details below (like the `spinFor` drivetrain command) don't match the lessons.
+
 Do these **in order**, on **your own branch** (`student/<firstname>`; see the README). Each one builds on the ones before it. Commit after each exercise, with a message that says what you changed and why.
 
 After every change:
