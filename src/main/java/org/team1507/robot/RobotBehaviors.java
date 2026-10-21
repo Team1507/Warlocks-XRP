@@ -20,8 +20,50 @@ import org.team1507.lib.core.framework.Subsystem1507;
 // RobotBehaviors
 //
 // A single shared library of coordinated, multi-subsystem robot behaviors.
-// A behavior defined here is the ONE definition used everywhere: a driver
-// button in teleop and a step in an auto routine call the same method.
+// These are complete robot actions that require two or more subsystems working
+// together in sequence or in parallel.
+//
+// KEY PRINCIPLE:
+//   A behavior defined here is the ONE definition used everywhere.
+//   Whether triggered by a driver button in teleop or a step in an auto
+//   routine, it calls the same method. You never write the same behavior twice.
+//
+// HOW TELEOP USES THIS:
+//   In robot/teleop/DriverTeleop.java:
+//     robot.driver.faceDown().onTrue(RobotBehaviors.celebrate(robot));
+//
+// HOW AUTO USES THIS:
+//   In AutoSequence.java (a one-line wrapper):
+//     public AutoSequence celebrate() {
+//         return action("celebrate()", () -> RobotBehaviors.celebrate(robot()));
+//     }
+//   Then in a routine:
+//     new AutoSequence().driveStraight(0.7).waitUntilDistance(0.3).celebrate().build();
+//
+// HOW TO ADD A NEW BEHAVIOR (Commands v3):
+//   1. Identify which subsystems are involved.
+//   2. Write a static method here that combines their commands. The simplest
+//      way reads top to bottom:
+//
+//        return Command.requiring(robot.drivetrain, robot.arm).executing(coroutine -> {
+//            coroutine.awaitAll(robot.arm.up(), robot.drivetrain.turnByAngle(90)); // both at once
+//            coroutine.await(robot.arm.down());                                  // then this
+//        }).named("MyBehavior");
+//
+//      Or chain them:  Command.sequence(a, b).named("...")
+//                      Command.parallel(a, b).named("...")
+//   3. Add a wrapper in AutoSequence.java if it's needed in auto routines.
+//   4. Bind it in an OpMode (e.g. DriverTeleop) if it's a driver control.
+//
+// WHY requiring(...) AND NOT noRequirements(...):
+//   A behavior that requires the subsystems it uses can be interrupted as a
+//   whole (by the failsafe, or by the driver taking over). The commands it runs
+//   inside may use those subsystems, because they belong to it.
+//
+// NAMING CONVENTION:
+//   Name behaviors by what the robot DOES, not what the mechanism is.
+//   GOOD:  celebrate(), scoreHigh(), pickUp()
+//   AVOID: armUpAndTurn180ThenArmDown()
 // ─────────────────────────────────────────────────────────────────────────────
 public final class RobotBehaviors {
 
@@ -51,5 +93,26 @@ public final class RobotBehaviors {
             .executing(coroutine -> {})
             .withPriority(Command.HIGHEST_PRIORITY)
             .named("Failsafe");
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // EXAMPLE: DRIVETRAIN + ARM
+    // ─────────────────────────────────────────────────────────────────
+
+    /**
+     * Celebrate: raise the arm while turning around, then lower the arm.
+     *
+     * <p>An example of the two ways to combine commands inside a coroutine:
+     * {@code awaitAll} runs commands at the same time and waits for all of
+     * them; {@code await} runs one and waits for it.
+     *
+     * <p>Used from teleop (A / faceDown in DriverTeleop) and auto
+     * ({@code .celebrate()} in AutoSequence, see DriveAndCelebrateAuto).
+     */
+    public static Command celebrate(Robot robot) {
+        return Command.requiring(robot.drivetrain, robot.arm).executing(coroutine -> {
+            coroutine.awaitAll(robot.arm.up(), robot.drivetrain.turnByAngle(180));
+            coroutine.await(robot.arm.down());
+        }).named("Celebrate");
     }
 }

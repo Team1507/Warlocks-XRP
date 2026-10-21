@@ -31,6 +31,7 @@ import org.team1507.robot.RobotBehaviors;
 //   Left stick       arcade drive (up/down = forward/back, left/right = turn)
 //   Left bumper      arm up
 //   Right bumper     arm down
+//   A (faceDown)     celebrate: arm up while turning around, then arm down
 //   Back             failsafe: interrupt everything (see RobotBehaviors)
 // ─────────────────────────────────────────────────────────────────────────────
 @Teleop(name = "Driver")
@@ -66,6 +67,11 @@ public final class DriverTeleop implements OpMode {
 
         robot.driver.leftBumper().onTrue(robot.arm.up());
         robot.driver.rightBumper().onTrue(robot.arm.down());
+
+        // ── Behaviors (multi-subsystem, see RobotBehaviors) ────────────────
+
+        // The same behavior the DriveAndCelebrate auto uses: one definition.
+        robot.driver.faceDown().onTrue(RobotBehaviors.celebrate(robot));
 
         // ── Failsafe ───────────────────────────────────────────────────────
 

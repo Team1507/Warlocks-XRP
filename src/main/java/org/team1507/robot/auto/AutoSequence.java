@@ -18,6 +18,7 @@ import org.wpilib.command3.Command;
 import org.wpilib.system.Timer;
 
 import org.team1507.robot.Robot;
+import org.team1507.robot.RobotBehaviors;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // AutoSequence
@@ -59,6 +60,7 @@ import org.team1507.robot.Robot;
 //   .waitUntilStopped()         hold still until the wheels stop
 //   .stop()                     motors to 0
 //   .armUp() / .armDown() / .armTo(degrees)
+//   .celebrate()                a RobotBehaviors behavior (drivetrain + arm)
 //
 // MISTAKES ARE CAUGHT BEFORE THE ROBOT MOVES
 //   build() refuses a routine with a drive step that nothing stops, or an
@@ -179,6 +181,15 @@ public final class AutoSequence {
     /** Moves the arm to {@code degrees} (clamped to its limits). */
     public AutoSequence armTo(double degrees) {
         return action("armTo(" + degrees + ")", () -> robot().arm.goTo(degrees));
+    }
+
+    // =========================================================================
+    // ROBOT BEHAVIORS — multi-subsystem actions from RobotBehaviors.java
+    // =========================================================================
+
+    /** Raises the arm while turning around, then lowers it (RobotBehaviors.celebrate). */
+    public AutoSequence celebrate() {
+        return action("celebrate()", () -> RobotBehaviors.celebrate(robot()));
     }
 
     // =========================================================================
