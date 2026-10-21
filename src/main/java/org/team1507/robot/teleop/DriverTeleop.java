@@ -67,7 +67,7 @@ public final class DriverTeleop implements OpMode {
 
         // ── Behaviors (multi-subsystem, see RobotBehaviors) ────────────────
 
-        // The same behavior the DriveAndCelebrate auto uses: one definition.
+        // An auto can run the same behavior with .celebrate(): one definition.
         robot.driver.faceDown().onTrue(RobotBehaviors.celebrate(robot));
 
         // ── Failsafe ───────────────────────────────────────────────────────

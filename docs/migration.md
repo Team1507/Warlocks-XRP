@@ -208,6 +208,8 @@ All five autos kept their speeds and distances:
 
 **To add an auto:** copy `ForwardAndBackAuto.java`, rename the class and the `@Autonomous` name, and change the steps. There's no list to register it in.
 
+> **Later change (`Trim autos to one example and a template`):** to make this repo a starting point for students, only Forward and Back was kept. The other four routines (and Drive and Celebrate, from step 9) were replaced by `TemplateAuto.java`, a blank routine to fill in. Rebuilding them is exercise 3. The subsystem commands they used (`followLine`, `turnTo`, `waitUntilRange`, ...) are all still there.
+
 ## 9. RobotBehaviors (`RobotBehaviors: failsafe plus a drivetrain + arm example`)
 
 `RobotBehaviors.java` holds actions that use **more than one subsystem**, defined once and used from both teleop and auto. The example, `celebrate()`, raises the arm while turning around, then lowers it:
@@ -219,7 +221,7 @@ return Command.requiring(robot.drivetrain, robot.arm).executing(coroutine -> {
 }).named("Celebrate");
 ```
 
-Teleop runs it with the A button. Auto runs it with `.celebrate()` in the new "Drive and Celebrate" routine. Same method, both places.
+Teleop runs it with the A button. Auto runs it with `.celebrate()` in the new "Drive and Celebrate" routine (later removed; see step 8's note). Same method, both places.
 
 ## 10. Constants (`Constants: the 1507Base layout (RobotMap, kDrivetrain.kTuning, kArm, kSensors)`)
 
@@ -257,6 +259,7 @@ Almost everything above changes how the code is *written*, not what the robot *d
 | Turn error wrap correct below -180° | Java's `%` (step 6) |
 | "Forward Until 10cm Then Turn to 60" → "…Turn 60" | 32-character OpMode name limit (step 8) |
 | New "Drive and Celebrate" auto, A button | RobotBehaviors example (step 9) |
+| Only Forward and Back + a template auto in the Driver Station | Students write the rest (exercise 3) |
 
 **None of this has been tried on a real XRP yet.** The tests run in simulation only. The first real drive should be done with a mentor, checking directions, distances and turns before running the autos.
 

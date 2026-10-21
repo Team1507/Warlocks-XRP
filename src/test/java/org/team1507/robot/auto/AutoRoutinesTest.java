@@ -52,7 +52,7 @@ class AutoRoutinesTest {
     void everyAutoRoutineBuilds() throws Exception {
         TestRobot.get();
         List<Class<?>> routines = findRoutines();
-        assertTrue(routines.size() >= 5, "expected at least the five 2026 autos, found " + routines);
+        assertFalse(routines.isEmpty(), "no @Autonomous classes found in " + PACKAGE);
 
         List<String> problems = new ArrayList<>();
         for (Class<?> routine : routines) {

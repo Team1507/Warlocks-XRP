@@ -37,7 +37,7 @@ import org.team1507.lib.core.framework.Subsystem1507;
 //     public AutoSequence celebrate() {
 //         return action("celebrate()", () -> RobotBehaviors.celebrate(robot()));
 //     }
-//   Then in a routine:
+//   (that wrapper already exists). Then in a routine:
 //     new AutoSequence().driveStraight(0.7).waitUntilDistance(0.3).celebrate().build();
 //
 // HOW TO ADD A NEW BEHAVIOR (Commands v3):
@@ -107,7 +107,7 @@ public final class RobotBehaviors {
      * them; {@code await} runs one and waits for it.
      *
      * <p>Used from teleop (A / faceDown in DriverTeleop) and auto
-     * ({@code .celebrate()} in AutoSequence, see DriveAndCelebrateAuto).
+     * ({@code .celebrate()} in AutoSequence, ready to use in a routine).
      */
     public static Command celebrate(Robot robot) {
         return Command.requiring(robot.drivetrain, robot.arm).executing(coroutine -> {

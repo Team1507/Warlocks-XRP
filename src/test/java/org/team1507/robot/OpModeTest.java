@@ -28,7 +28,8 @@ import org.wpilib.simulation.DriverStationSim;
 // Runs the REAL robot loop (OpModeRobot.startCompetition) on a background
 // thread and drives it the way the Driver Station would: pick an OpMode from
 // the drop-down, enable, disable. Checks that:
-//   - every 2026 auto and the Driver teleop show up in the Driver Station
+//   - the example auto, the template auto and the Driver teleop show up in
+//     the Driver Station
 //   - enabling an auto starts it driving
 //   - disabling stops the auto (LoggedRobot cancels everything on disable)
 //   - the Driver teleop starts joystick driving
@@ -40,10 +41,7 @@ class OpModeTest {
     private static final List<String> EXPECTED = List.of(
         "Driver",
         "Forward and Back",
-        "Forward and Back Distance",
-        "Forward Until 10cm Then Turn",
-        "Forward Until 10cm Then Turn 60",
-        "Follow Line");
+        "My Auto (Template)");
 
     @Test
     void autosAndTeleopRunThroughTheOpModeFramework() throws Exception {

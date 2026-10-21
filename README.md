@@ -14,7 +14,8 @@ src/main/java/org/team1507/
     RobotBehaviors.java   Multi-subsystem behaviors (used by teleop AND auto)
     auto/
       AutoSequence.java   The step-by-step auto builder
-      routines/           One @Autonomous class per auto routine
+      routines/           One @Autonomous class per auto routine:
+                            ForwardAndBackAuto (finished example), TemplateAuto (yours to fill in)
     teleop/
       DriverTeleop.java   The teleop mode: driving and button bindings
     subsystems/
@@ -37,7 +38,7 @@ docs/
 3. **Turn on the XRP and join its Wi-Fi network** from your laptop. The XRP makes its own network; ask a mentor for the name and password. Your laptop loses internet while connected, which is normal.
 4. **Run the code:** press `Ctrl+Shift+P` and choose **WPILib: Simulate Robot Code**. The robot program runs on your laptop and talks to the XRP over Wi-Fi (at `192.168.42.1`).
    - This project starts the **Sim GUI** and the **XRP Client** automatically. If VS Code ever asks which extensions to run, keep **both** checked: the Sim GUI is your Driver Station, and the XRP Client is the connection to the robot. Without it, the program runs but the XRP never moves.
-5. **Pick a mode in the Driver Station drop-downs** in the Sim GUI: an autonomous routine (e.g. "Forward and Back") or the "Driver" teleop. Then click **Enable**. Click **Disable** to stop.
+5. **Pick a mode in the Driver Station drop-downs** in the Sim GUI: an autonomous routine ("Forward and Back", or "My Auto (Template)" once you've filled it in) or the "Driver" teleop. Then click **Enable**. Click **Disable** to stop.
 6. **Plug in a gamepad** for teleop, and drag it onto Joystick 0 in the Sim GUI.
 
 You can build and test from a terminal too (VS Code's terminal is PowerShell). Point Gradle at the 2027 JDK first:

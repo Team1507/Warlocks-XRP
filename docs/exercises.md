@@ -35,30 +35,34 @@ Every subsystem has a `periodic()` method that runs every 20 ms. Anything you `l
    ```java
    log("AverageDistanceMeters", getAverageDistance());
    ```
-3. Run **Forward and Back Distance** and watch your new value. Does it reach 0.5 and then go back down by 0.1?
+3. Run **Forward and Back** and watch your new value. It should climb while the robot drives forward, then come back down toward 0.
 4. Now log something nobody logs yet: is the robot turning left right now? (Hint: `getLeftThrottle()` and `getRightThrottle()`, and remember the right one reads negative when that wheel goes forward.)
 
 **Name values by what they mean, with the unit:** `AverageDistanceMeters`, not `dist` or `value2`.
 
-## 3. Copy an auto and change it ⭐⭐
+## 3. Write your own auto from the template ⭐⭐
 
-**Goal:** write your own autonomous routine.
+**Goal:** write autonomous routines yourself.
 
-1. Copy `auto/routines/ForwardAndBackDistanceAuto.java` to a new file, `SquareAuto.java`, in the same folder.
-2. Rename the class to `SquareAuto`, and change `@Autonomous(name = ...)` to `"Square"`.
-3. Change `build()` to drive a square: drive 0.3 m, turn 90°, four times.
-   ```java
-   return new AutoSequence()
-       .driveStraight(0.7).waitUntilDistance(0.3)
-       .turnBy(90)
-       // ... three more sides
-       .stop()
-       .build();
-   ```
+`auto/routines/` has two files: `ForwardAndBackAuto.java`, a finished example, and `TemplateAuto.java`, a blank auto for you to fill in. The template's comment lists every step you can use.
+
+1. Read `ForwardAndBackAuto.java` and run **Forward and Back**. Match each line of `build()` to what the robot does.
+2. Open `TemplateAuto.java`. Rename the class and file to `SquareAuto`, and change `@Autonomous(name = ...)` to `"Square"`.
+3. Fill in `build()` to drive a square: drive 0.3 m, turn 90°, four times, then stop.
 4. Run it. "Square" appears in the Driver Station by itself. You didn't register it anywhere.
-5. **Break it on purpose:** delete one `.waitUntilDistance(0.3)` and build. Read the error. `AutoRoutinesTest` caught your mistake before the robot moved. Put it back.
+5. **Break it on purpose:** delete one of your wait steps and build. Read the error. `AutoRoutinesTest` caught your mistake before the robot moved. Put it back.
 
 **Think about it:** does the robot end up exactly where it started? If not, which steps are adding the error?
+
+**More autos to write.** Copy the template again for each one. These are the autos our 2026 XRP code had; work out the steps yourself:
+
+| Auto | What the robot should do |
+|---|---|
+| Forward and Back Distance | Drive forward at 0.7 for 0.5 m, then backward at 0.7 for 0.1 m. (Like Forward and Back, but by distance. Why is that better when the battery gets low?) |
+| Wall Then Turn Around | Drive forward at 0.75 until something is 0.15 m in front, turn around, wait until the robot has stopped. |
+| Wall Then Face 60 | Same, but end up facing 60° (absolute) instead of turning around. What's the difference between `turnBy` and `turnTo`? |
+| Follow Line | Follow a black tape line at 0.45 until both line sensors read above 0.75 (a crossbar of tape at the end). |
+| Drive and Celebrate | Drive 0.3 m, then run the `celebrate` behavior. |
 
 ## 4. Write a coroutine command ⭐⭐
 
@@ -124,7 +128,7 @@ You'll write `backAway()`: lower the arm while backing up 0.2 m, then raise the 
    ```
    Then `awaitAll(robot.arm.down(), backUp)`, then `await(robot.arm.up())`. Name it `"BackAway"`.
 3. **Teleop:** bind it to X (`faceLeft()`) in `DriverTeleop`.
-4. **Auto:** add a one-line wrapper to `AutoSequence.java` next to `celebrate()`, and use it in a new routine: drive forward until 0.15 m from a wall, then back away.
+4. **Auto:** add a one-line wrapper to `AutoSequence.java` next to `celebrate()`, and use it in a new routine (copy `TemplateAuto.java`): drive forward until 0.15 m from a wall, then back away.
 5. Press Back (failsafe) in the middle of it. Does everything stop? Why? (Hint: what does `Command.requiring(...)` do that `Command.noRequirements(...)` doesn't?)
 
 **Name behaviors by what the robot does:** `backAway()`, not `armDownDriveBackArmUp()`.
