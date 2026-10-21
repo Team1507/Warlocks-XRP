@@ -6,24 +6,33 @@
 //   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝
 //                           TEAM 1507 WARLOCKS
 
-package frc.robot.commands;
+package org.team1507.robot;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.XRPSensors;
+import org.wpilib.system.DataLogManager;
+import org.wpilib.driverstation.MatchState;
+import org.wpilib.driverstation.RobotState;
+import org.wpilib.driverstation.Alliance;
+import org.wpilib.driverstation.MatchType;
+import org.wpilib.driverstation.DriverStationErrors;
+import org.wpilib.framework.TimedRobot;
+import org.wpilib.command2.CommandScheduler;
 
-public class CmdWaitUntilMarker extends Command {
-    private final XRPSensors sensors;
-    private final double threshold;
+/**
+ * Base robot class that enables data logging on startup.
+ *
+ * <p>Starts {@link DataLogManager} and pipes DriverStation data into the log
+ * so any crashes or warnings are captured for post-run review. All robot
+ * classes extend this instead of {@link TimedRobot} directly.
+ */
+public abstract class LoggedRobot extends TimedRobot {
 
-    public CmdWaitUntilMarker(XRPSensors sensors, double threshold) {
-        this.sensors = sensors;
-        this.threshold = threshold;
+    protected LoggedRobot() {
+        DataLogManager.start();
+        DriverStation.startDataLog(DataLogManager.getLog());
     }
 
     @Override
-    public boolean isFinished() {
-        double leftSensor = sensors.getLeftReflectance();
-        double rightSensor = sensors.getRightReflectance();
-        return leftSensor > threshold && rightSensor > threshold;
+    public void robotPeriodic() {
+        CommandScheduler.getInstance().run();
     }
 }

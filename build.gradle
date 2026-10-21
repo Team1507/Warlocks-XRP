@@ -9,7 +9,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_25
 }
 
-def ROBOT_MAIN_CLASS = "frc.robot.Main"
+def ROBOT_MAIN_CLASS = "org.team1507.robot.Main"
 
 // Set this to true to enable desktop support.
 // The XRP always runs "in simulation": the robot program runs on the laptop and

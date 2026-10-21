@@ -6,32 +6,24 @@
 //   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝
 //                           TEAM 1507 WARLOCKS
 
-package frc.robot.commands;
+package org.team1507.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.XRPDrivetrain;
+import org.wpilib.command2.Command;
+import org.team1507.robot.subsystems.XRPSensors;
 
-public class CmdWaitUntilDistance extends Command {
-    private final XRPDrivetrain drivetrain;
-    private final double targetMeters;
-    private double startLeft, startRight;
+public class CmdWaitUntilRange extends Command {
+    private final XRPSensors sensors;
+    private final double stopDistanceMeters;
 
-    public CmdWaitUntilDistance(XRPDrivetrain drivetrain, double targetMeters) {
-        this.drivetrain = drivetrain;
-        this.targetMeters = targetMeters;
-    }
-
-    @Override
-    public void initialize() {
-        startLeft = drivetrain.getLeftDistance();
-        startRight = drivetrain.getRightDistance();
+    public CmdWaitUntilRange(XRPSensors sensors, double stopDistanceMeters) {
+        this.sensors = sensors;
+        this.stopDistanceMeters = stopDistanceMeters;
+        // No drivetrain requirement here — this command doesn’t drive
     }
 
     @Override
     public boolean isFinished() {
-        double left = drivetrain.getLeftDistance() - startLeft;
-        double right = drivetrain.getRightDistance() - startRight;
-        double avg = (left + right) / 2.0;
-        return Math.abs(avg) >= Math.abs(targetMeters);
+        // End when the measured range is less than or equal to the target
+        return sensors.getRangeMeters() <= stopDistanceMeters;
     }
 }

@@ -6,21 +6,12 @@
 //   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝
 //                           TEAM 1507 WARLOCKS
 
-package frc.robot.commands;
+package org.team1507.robot;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.XRPDrivetrain;
-
-public class CmdWaitUntilStopped extends Command {
-    private final XRPDrivetrain drivetrain;
-
-    public CmdWaitUntilStopped(XRPDrivetrain drivetrain) {
-        this.drivetrain = drivetrain;
-        addRequirements(drivetrain); // optional, since it doesn't drive
-    }
-
-    @Override
-    public boolean isFinished() {
-        return drivetrain.isStopped();
-    }
-}
+/**
+ * Retained for compatibility but no longer used.
+ *
+ * <p>All subsystems, bindings, and auto configuration now live in {@link Robot},
+ * following the 1507Base single-class pattern.
+ */
+public class RobotContainer {}

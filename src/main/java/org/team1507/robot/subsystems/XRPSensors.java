@@ -6,11 +6,11 @@
 //   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝
 //                           TEAM 1507 WARLOCKS
 
-package frc.robot.subsystems;
+package org.team1507.robot.subsystems;
 
-import edu.wpi.first.wpilibj.xrp.XRPGyro;
-import edu.wpi.first.wpilibj.xrp.XRPRangefinder;
-import edu.wpi.first.wpilibj.xrp.XRPReflectanceSensor;
+import org.wpilib.xrp.XRPGyro;
+import org.wpilib.xrp.XRPRangefinder;
+import org.wpilib.xrp.XRPReflectanceSensor;
 
 /**
  * Subsystem wrapper for all onboard XRP sensors: rangefinder, reflectance

@@ -6,20 +6,20 @@
 //   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝
 //                           TEAM 1507 WARLOCKS
 
-package frc.robot.commands;
+package org.team1507.robot.commands;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
-import frc.robot.subsystems.XRPDrivetrain;
-import frc.robot.subsystems.XRPSensors;
+import org.wpilib.math.controller.PIDController;
+import org.wpilib.command2.Command;
+import org.team1507.robot.Constants;
+import org.team1507.robot.subsystems.XRPDrivetrain;
+import org.team1507.robot.subsystems.XRPSensors;
 
 /**
  * Follows a line using the reflectance sensors.
  *
  * <p>A PID controller balances left/right reflectance to keep the robot
  * centered on the line. This command never finishes on its own — wrap it in
- * a {@link edu.wpi.first.wpilibj2.command.ParallelRaceGroup} with a marker
+ * a {@link org.wpilib.command2.ParallelRaceGroup} with a marker
  * condition.
  */
 public class CmdDriveLine extends Command {

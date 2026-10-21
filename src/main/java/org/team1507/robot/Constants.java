@@ -6,7 +6,7 @@
 //   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝
 //                           TEAM 1507 WARLOCKS
 
-package frc.robot;
+package org.team1507.robot;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean

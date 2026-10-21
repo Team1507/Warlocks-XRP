@@ -6,12 +6,12 @@
 //   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝
 //                           TEAM 1507 WARLOCKS
 
-package frc.robot.subsystems;
+package org.team1507.robot.subsystems;
 
-import edu.wpi.first.util.sendable.SendableRegistry;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.xrp.XRPMotor;
+import org.wpilib.util.sendable.SendableRegistry;
+import org.wpilib.hardware.rotation.Encoder;
+import org.wpilib.drive.DifferentialDrive;
+import org.wpilib.xrp.XRPMotor;
 
 public class XRPDrivetrain extends XRPSubsystem {
 

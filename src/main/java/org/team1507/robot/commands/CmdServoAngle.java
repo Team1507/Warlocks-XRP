@@ -6,13 +6,13 @@
 //   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝
 //                           TEAM 1507 WARLOCKS
 
-package frc.robot.commands;
+package org.team1507.robot.commands;
 
 // WPILib core libraries
-import edu.wpi.first.wpilibj2.command.Command;
+import org.wpilib.command2.Command;
 
 // Robot subsystems
-import frc.robot.subsystems.XRPServoArm;
+import org.team1507.robot.subsystems.XRPServoArm;
 
 /**
  * Command to move the XRPServoArm to a specified angle.

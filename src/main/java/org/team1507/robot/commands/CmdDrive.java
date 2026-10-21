@@ -6,19 +6,19 @@
 //   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝
 //                           TEAM 1507 WARLOCKS
 
-package frc.robot.commands;
+package org.team1507.robot.commands;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.XRPDrivetrain;
-import frc.robot.subsystems.XRPSensors;
+import org.wpilib.math.controller.PIDController;
+import org.wpilib.command2.Command;
+import org.team1507.robot.subsystems.XRPDrivetrain;
+import org.team1507.robot.subsystems.XRPSensors;
 
 /**
  * Drives at a fixed speed while using a PID controller to maintain the heading
  * captured at command start.
  *
  * <p>This command never finishes on its own — wrap it in a
- * {@link edu.wpi.first.wpilibj2.command.ParallelRaceGroup} with a time or
+ * {@link org.wpilib.command2.ParallelRaceGroup} with a time or
  * distance condition to limit its duration.
  */
 public class CmdDrive extends Command {

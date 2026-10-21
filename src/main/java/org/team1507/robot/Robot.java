@@ -6,22 +6,22 @@
 //   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝
 //                           TEAM 1507 WARLOCKS
 
-package frc.robot;
+package org.team1507.robot;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import org.wpilib.math.util.MathUtil;
+import org.wpilib.smartdashboard.SendableChooser;
+import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.command2.Command;
+import org.wpilib.command2.RunCommand;
+import org.wpilib.command2.button.CommandXboxController;
 
-import static frc.robot.Constants.*;
-import static frc.robot.Constants.ServoArm.*;
+import static org.team1507.robot.Constants.*;
+import static org.team1507.robot.Constants.ServoArm.*;
 
-import frc.robot.commands.CmdServoAngle;
-import frc.robot.subsystems.XRPDrivetrain;
-import frc.robot.subsystems.XRPSensors;
-import frc.robot.subsystems.XRPServoArm;
+import org.team1507.robot.commands.CmdServoAngle;
+import org.team1507.robot.subsystems.XRPDrivetrain;
+import org.team1507.robot.subsystems.XRPSensors;
+import org.team1507.robot.subsystems.XRPServoArm;
 
 /**
  * Main robot class — subsystems, controller bindings, and autonomous selection
@@ -121,7 +121,7 @@ public final class Robot extends LoggedRobot {
     }
 
     @Override
-    public void testInit() {
-        edu.wpi.first.wpilibj2.command.CommandScheduler.getInstance().cancelAll();
+    public void utilityInit() {
+        org.wpilib.command2.CommandScheduler.getInstance().cancelAll();
     }
 }

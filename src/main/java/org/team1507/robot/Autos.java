@@ -6,26 +6,26 @@
 //   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝
 //                           TEAM 1507 WARLOCKS
 
-package frc.robot;
+package org.team1507.robot;
 
 // WPI libraries
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import org.wpilib.command2.ParallelRaceGroup;
+import org.wpilib.command2.SequentialCommandGroup;
 
 // Subsystems
-import frc.robot.subsystems.XRPDrivetrain;
-import frc.robot.subsystems.XRPSensors;
+import org.team1507.robot.subsystems.XRPDrivetrain;
+import org.team1507.robot.subsystems.XRPSensors;
 
 // Custom Commands
-import frc.robot.commands.CmdDrive;
-import frc.robot.commands.CmdDriveLine;
-import frc.robot.commands.CmdWaitUntilDistance;
-import frc.robot.commands.CmdWaitUntilMarker;
-import frc.robot.commands.CmdWaitUntilRange;
-import frc.robot.commands.CmdTurnByAngle;
-import frc.robot.commands.CmdTurnToAngle;
-import frc.robot.commands.CmdWaitUntilStopped;
-import frc.robot.commands.CmdWaitUntilTime;
+import org.team1507.robot.commands.CmdDrive;
+import org.team1507.robot.commands.CmdDriveLine;
+import org.team1507.robot.commands.CmdWaitUntilDistance;
+import org.team1507.robot.commands.CmdWaitUntilMarker;
+import org.team1507.robot.commands.CmdWaitUntilRange;
+import org.team1507.robot.commands.CmdTurnByAngle;
+import org.team1507.robot.commands.CmdTurnToAngle;
+import org.team1507.robot.commands.CmdWaitUntilStopped;
+import org.team1507.robot.commands.CmdWaitUntilTime;
 
 public final class Autos {
     /**

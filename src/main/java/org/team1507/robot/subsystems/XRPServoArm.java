@@ -6,9 +6,9 @@
 //   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝
 //                           TEAM 1507 WARLOCKS
 
-package frc.robot.subsystems;
+package org.team1507.robot.subsystems;
 
-import edu.wpi.first.wpilibj.xrp.XRPServo;
+import org.wpilib.xrp.XRPServo;
 
 /**
  * Subsystem wrapper for an XRP servo arm.

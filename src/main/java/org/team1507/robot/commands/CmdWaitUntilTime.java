@@ -6,12 +6,26 @@
 //   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝
 //                           TEAM 1507 WARLOCKS
 
-package frc.robot;
+package org.team1507.robot.commands;
 
-/**
- * Retained for compatibility but no longer used.
- *
- * <p>All subsystems, bindings, and auto configuration now live in {@link Robot},
- * following the 1507Base single-class pattern.
- */
-public class RobotContainer {}
+import org.wpilib.command2.Command;
+import org.wpilib.system.Timer;
+
+public class CmdWaitUntilTime extends Command {
+    private final double duration;
+    private double startTime;
+
+    public CmdWaitUntilTime(double duration) {
+        this.duration = duration;
+    }
+
+    @Override
+    public void initialize() {
+        startTime = Timer.getTimestamp();
+    }
+
+    @Override
+    public boolean isFinished() {
+        return Timer.getTimestamp() - startTime >= duration;
+    }
+}

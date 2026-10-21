@@ -6,24 +6,24 @@
 //   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝
 //                           TEAM 1507 WARLOCKS
 
-package frc.robot.commands;
+package org.team1507.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.XRPSensors;
+import org.wpilib.command2.Command;
+import org.team1507.robot.subsystems.XRPSensors;
 
-public class CmdWaitUntilRange extends Command {
+public class CmdWaitUntilMarker extends Command {
     private final XRPSensors sensors;
-    private final double stopDistanceMeters;
+    private final double threshold;
 
-    public CmdWaitUntilRange(XRPSensors sensors, double stopDistanceMeters) {
+    public CmdWaitUntilMarker(XRPSensors sensors, double threshold) {
         this.sensors = sensors;
-        this.stopDistanceMeters = stopDistanceMeters;
-        // No drivetrain requirement here — this command doesn’t drive
+        this.threshold = threshold;
     }
 
     @Override
     public boolean isFinished() {
-        // End when the measured range is less than or equal to the target
-        return sensors.getRangeMeters() <= stopDistanceMeters;
+        double leftSensor = sensors.getLeftReflectance();
+        double rightSensor = sensors.getRightReflectance();
+        return leftSensor > threshold && rightSensor > threshold;
     }
 }

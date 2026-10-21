@@ -6,26 +6,21 @@
 //   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝
 //                           TEAM 1507 WARLOCKS
 
-package frc.robot.commands;
+package org.team1507.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj.Timer;
+import org.wpilib.command2.Command;
+import org.team1507.robot.subsystems.XRPDrivetrain;
 
-public class CmdWaitUntilTime extends Command {
-    private final double duration;
-    private double startTime;
+public class CmdWaitUntilStopped extends Command {
+    private final XRPDrivetrain drivetrain;
 
-    public CmdWaitUntilTime(double duration) {
-        this.duration = duration;
-    }
-
-    @Override
-    public void initialize() {
-        startTime = Timer.getFPGATimestamp();
+    public CmdWaitUntilStopped(XRPDrivetrain drivetrain) {
+        this.drivetrain = drivetrain;
+        addRequirements(drivetrain); // optional, since it doesn't drive
     }
 
     @Override
     public boolean isFinished() {
-        return Timer.getFPGATimestamp() - startTime >= duration;
+        return drivetrain.isStopped();
     }
 }

@@ -6,11 +6,15 @@
 //   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝
 //                           TEAM 1507 WARLOCKS
 
-package frc.robot.subsystems;
+package org.team1507.robot.subsystems;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.wpilib.driverstation.MatchState;
+import org.wpilib.driverstation.RobotState;
+import org.wpilib.driverstation.Alliance;
+import org.wpilib.driverstation.MatchType;
+import org.wpilib.driverstation.DriverStationErrors;
+import org.wpilib.smartdashboard.SmartDashboard;
+import org.wpilib.command2.SubsystemBase;
 
 /**
  * Base class for all XRP subsystems.
@@ -64,11 +68,11 @@ public abstract class XRPSubsystem extends SubsystemBase {
 
     /** Reports a recoverable warning to the Driver Station with the subsystem name prepended. */
     protected void warn(String message) {
-        DriverStation.reportWarning("[" + getName() + "] " + message, false);
+        DriverStationErrors.reportWarning("[" + getName() + "] " + message, false);
     }
 
     /** Reports a serious fault to the Driver Station with the subsystem name prepended. */
     protected void fault(String message) {
-        DriverStation.reportError("[" + getName() + "] " + message, false);
+        DriverStationErrors.reportError("[" + getName() + "] " + message, false);
     }
 }
