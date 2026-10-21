@@ -10,12 +10,6 @@
       "name": "WPILib Desktop Debug",
       "request": "launch",
       "desktop": true,
-    },
-    {
-      "type": "wpilib",
-      "name": "WPILib roboRIO Debug",
-      "request": "launch",
-      "desktop": false,
     }
   ]
 }
