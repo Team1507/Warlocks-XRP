@@ -72,7 +72,13 @@ public final class Drivetrain extends Subsystem1507 {
     /** Encoder counts per wheel revolution: 12 counts per motor turn × 48.75:1 gearbox. */
     private static final double COUNTS_PER_WHEEL_REV = 585.0;
     private static final double WHEEL_DIAMETER_METERS = 0.060;
-    private static final double METERS_PER_COUNT = Math.PI * WHEEL_DIAMETER_METERS / COUNTS_PER_WHEEL_REV;
+
+    // LESSON 2: how far the robot rolls for ONE encoder count, in meters.
+    // Work it out from the two numbers above (see the wiki, Lesson 2).
+    // 1.0 is WRONG on purpose: it says every count is a whole meter, so
+    // distances are far too big and distance-based autos stop almost at once.
+    // (It can't be 0: WPILib refuses a distance per pulse of 0.)
+    private static final double METERS_PER_COUNT = 1.0;   // TODO
 
     // Tuning knobs (PID gains, turn speeds, the forward boost) are in
     // Constants.kDrivetrain.kTuning.

@@ -113,10 +113,19 @@ Once something makes sense here, open the matching file in 1507Base (`SystemCore
 | `.wpilib/templates/subsystem1507/` | `.wpilib/templates/subsystem1507/` | XRP hardware examples instead of Motor1507 |
 | `.github/workflows/build.yml` | `.github/workflows/build.yml` | Same |
 
-## Learning path
+## Lessons
 
-1. Read [docs/migration.md](docs/migration.md) with `git log` open. It walks through each conversion commit and explains why.
-2. Do [docs/exercises.md](docs/exercises.md) in order on your own branch.
+The lessons are on the **[wiki](https://github.com/Team1507/Warlocks-XRP/wiki)**, one page per lesson, listed in the sidebar. Work through them in order on your own branch.
+
+Some code has `// LESSON n: TODO` comments where you write your part. Each lesson has a check you can run:
+
+```
+.\gradlew lessonTest --tests "*Lesson02*"
+```
+
+or click the green ▶ next to the test in `src/test/java/org/team1507/lessons/`. The check fails until you've done the lesson. That's expected: lesson checks aren't part of the normal build, so everyone's build stays green while they work.
+
+For the story of how this code was converted to 2027, see [docs/migration.md](docs/migration.md).
 
 ## License
 

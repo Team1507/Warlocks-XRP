@@ -38,6 +38,13 @@ import org.team1507.robot.subsystems.Sensors;
 public final class Robot extends LoggedRobot {
 
     // -------------------------------------------------------------------------
+    // LESSON 1: put your name between the quotes, e.g. "Alex".
+    // The robot prints it when the program starts (see the constructor).
+    // -------------------------------------------------------------------------
+
+    public static final String PROGRAMMER_NAME = "TODO";
+
+    // -------------------------------------------------------------------------
     // Subsystems
     // -------------------------------------------------------------------------
 
@@ -56,6 +63,9 @@ public final class Robot extends LoggedRobot {
     // =========================================================================
 
     public Robot() {
+
+        // LESSON 1: shows up in the VS Code terminal and the Driver Station log.
+        System.out.println("Robot code by " + PROGRAMMER_NAME);
 
         // Subsystems
         drivetrain = new Drivetrain();

@@ -36,8 +36,23 @@ dependencies {
 }
 
 test {
-    useJUnitPlatform()
+    // 1507: lesson tests (@Tag("lesson")) check student exercises. They fail
+    // until a student does the lesson, so the normal build skips them.
+    useJUnitPlatform { excludeTags 'lesson' }
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
+}
+
+// 1507: check your lesson work.
+//   .\gradlew lessonTest                          every lesson
+//   .\gradlew lessonTest --tests "*Lesson02*"     just Lesson 2
+tasks.register('lessonTest', Test) {
+    description = 'Runs the lesson checks (see the wiki).'
+    group = 'verification'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform { includeTags 'lesson' }
+    systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
+    testLogging { events 'passed', 'failed'; exceptionFormat 'short' }
 }
 
 // Simulation configuration (e.g. environment variables).
@@ -52,6 +67,7 @@ application.mainClass = ROBOT_MAIN_CLASS
 
 wpi.java.configureApplication(application)
 wpi.java.configureTestTasks(test)
+wpi.java.configureTestTasks(tasks.lessonTest)
 
 // Configure string concat to always inline compile
 tasks.withType(JavaCompile) {
