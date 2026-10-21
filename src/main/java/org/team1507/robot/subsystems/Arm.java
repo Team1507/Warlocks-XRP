@@ -1,0 +1,78 @@
+//  ██╗    ██╗ █████╗ ██████╗ ██╗      ██████╗  ██████╗██╗  ██╗███████╗
+//  ██║    ██║██╔══██╗██╔══██╗██║     ██╔═══██╗██╔════╝██║ ██╔╝██╔════╝
+//  ██║ █╗ ██║███████║██████╔╝██║     ██║   ██║██║     █████╔╝ ███████╗
+//  ██║███╗██║██╔══██║██╔══██╗██║     ██║   ██║██║     ██╔═██╗ ╚════██║
+//  ╚███╔███╔╝██║  ██║██║  ██║███████╗╚██████╔╝╚██████╗██║  ██╗███████║
+//   ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝
+//                           TEAM 1507 WARLOCKS
+
+package org.team1507.robot.subsystems;
+
+import org.wpilib.xrp.XRPServo;
+
+import org.team1507.lib.core.framework.Subsystem1507;
+import org.team1507.robot.Constants.ServoArm;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Arm
+//
+// The servo arm on the XRP (servo port 4).
+//
+// ANGLE LIMITS:
+//   Every angle request is clamped between the lower and upper limit. The arm
+//   physically hits the robot outside that range, and a servo pushing against
+//   something it can't move gets hot and can strip its gears. The limit lives
+//   here, in the ONE method that moves the servo, so no command can forget it.
+//
+// NO POSITION SENSOR:
+//   A hobby servo doesn't report where it is. getAngle() returns the angle we
+//   last ASKED for, not where the arm really is.
+// ─────────────────────────────────────────────────────────────────────────────
+public final class Arm extends Subsystem1507 {
+
+    private final XRPServo servo = new XRPServo(ServoArm.SERVO_ARM_PORT);
+
+    /** The last angle requested, before clamping (logged so you can see when the limits kicked in). */
+    private double requestedDegrees = Double.NaN;
+
+    public Arm() {
+        super("Arm");
+    }
+
+    // =========================================================================
+    // Control
+    // =========================================================================
+
+    /**
+     * Moves the servo to {@code degrees}, clamped to the arm's limits.
+     *
+     * @param degrees desired angle [0–180]
+     */
+    public void setAngle(double degrees) {
+        requestedDegrees = degrees;
+        servo.setAngle(clamp(degrees));
+    }
+
+    /** The angle the servo was last told to go to (degrees). See the class comment. */
+    public double getAngle() { return servo.getAngle(); }
+
+    /** True if the servo was told to go within 2° of {@code degrees} (after clamping). */
+    public boolean isAtAngle(double degrees) {
+        return Math.abs(getAngle() - clamp(degrees)) < 2.0;
+    }
+
+    /** {@code degrees}, limited to the arm's safe range. */
+    public static double clamp(double degrees) {
+        return Math.clamp(degrees, ServoArm.LOWER_LIMIT, ServoArm.UPPER_LIMIT);
+    }
+
+    // =========================================================================
+    // Periodic
+    // =========================================================================
+
+    @Override
+    public void periodic() {
+        log("AngleDegrees",          getAngle());
+        log("RequestedAngleDegrees", requestedDegrees);
+    }
+}
