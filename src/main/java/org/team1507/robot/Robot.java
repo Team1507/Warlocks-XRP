@@ -8,120 +8,68 @@
 
 package org.team1507.robot;
 
-import org.wpilib.math.util.MathUtil;
-import org.wpilib.smartdashboard.SendableChooser;
-import org.wpilib.smartdashboard.SmartDashboard;
-import org.wpilib.command2.Command;
-import org.wpilib.command2.RunCommand;
-import org.wpilib.command2.button.CommandXboxController;
+import org.wpilib.command3.button.CommandGamepad;
 
-import static org.team1507.robot.Constants.*;
-import static org.team1507.robot.Constants.ServoArm.*;
+import org.team1507.lib.core.framework.LoggedRobot;
+import org.team1507.robot.subsystems.Arm;
+import org.team1507.robot.subsystems.Drivetrain;
+import org.team1507.robot.subsystems.Sensors;
 
-import org.team1507.robot.commands.CmdServoAngle;
-import org.team1507.robot.subsystems.XRPDrivetrain;
-import org.team1507.robot.subsystems.XRPSensors;
-import org.team1507.robot.subsystems.XRPServoArm;
-
-/**
- * Main robot class — subsystems, controller bindings, and autonomous selection
- * all live here, matching the 1507Base single-class pattern.
- *
- * <p>Extends {@link LoggedRobot} so all robot data (warnings, errors, DS events)
- * is captured in a DataLog file for post-run review.
- */
+// ─────────────────────────────────────────────────────────────────────────────
+// Robot
+//
+// Holds everything shared by all OpModes: subsystems, controllers, and each
+// subsystem's safe default command. What the robot DOES in each mode lives in
+// OpMode classes, which WPILib finds automatically and lists in the Driver
+// Station:
+//   - Autonomous: robot/auto/routines/  (@Autonomous, extend AutoOpMode)
+//   - Teleop:     robot/teleop/         (@Teleop) — driver button bindings live here
+//
+// Commands v3 ties bindings and default commands to the OpMode that creates
+// them, and removes them when a different OpMode is selected. So bindings go in
+// the OpMode that uses them, and the defaults set here are what every
+// subsystem falls back to when no OpMode overrides them.
+//
+// (2026: this file also had the auto chooser and autonomousInit/teleopInit.
+// In 2027 each mode is its own class, so none of that is needed here.)
+// ─────────────────────────────────────────────────────────────────────────────
 public final class Robot extends LoggedRobot {
 
     // -------------------------------------------------------------------------
     // Subsystems
     // -------------------------------------------------------------------------
 
-    public final XRPDrivetrain drivetrain = new XRPDrivetrain();
-    public final XRPSensors    sensors    = new XRPSensors();
-    public final XRPServoArm   servoArm   = new XRPServoArm(SERVO_ARM_PORT, UPPER_LIMIT, LOWER_LIMIT);
+    public final Drivetrain drivetrain;
+    public final Sensors    sensors;
+    public final Arm        arm;
 
     // -------------------------------------------------------------------------
     // Controllers
     // -------------------------------------------------------------------------
 
-    private final CommandXboxController driver = new CommandXboxController(M_CONTROLLER_PORT);
-
-    // -------------------------------------------------------------------------
-    // Autonomous
-    // -------------------------------------------------------------------------
-
-    private Command m_autoCommand = null;
-    private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+    public final CommandGamepad driver;
 
     // =========================================================================
     // Constructor
     // =========================================================================
 
     public Robot() {
-        configureAutos();
-        configureBindings();
-        configureDefaultBindings();
-    }
 
-    // =========================================================================
-    // Bindings
-    // =========================================================================
+        // Subsystems
+        drivetrain = new Drivetrain();
+        sensors    = new Sensors();
+        arm        = new Arm();
 
-    private void configureBindings() {
-        driver.leftBumper().onTrue(new CmdServoAngle(servoArm, ARM_UP));
-        driver.rightBumper().onTrue(new CmdServoAngle(servoArm, ARM_DOWN));
-    }
+        // Safe defaults: what each subsystem does when no command is using it.
+        // OpModes can override these (DriverTeleop sets joystick driving).
+        // Drivetrain.idle() sets the motors to 0; the arm's idle leaves the servo
+        // where it is (a servo holds its position by itself).
+        drivetrain.setDefaultCommand(drivetrain.idle());
+        arm.setDefaultCommand(arm.idle());
 
-    private void configureDefaultBindings() {
-        drivetrain.setDefaultCommand(
-            new RunCommand(
-                () -> {
-                    // Apply deadband before scaling so stick drift doesn't move the robot
-                    double x   = MathUtil.applyDeadband(-driver.getLeftY(),  0.12);
-                    double rot = MathUtil.applyDeadband( driver.getLeftX(),  0.12);
-                    drivetrain.arcadeDrive(x, rot);
-                },
-                drivetrain
-            )
-        );
-    }
-
-    private void configureAutos() {
-        autoChooser.setDefaultOption("Forward and Back",
-            Autos.forwardAndBack(drivetrain, sensors));
-        autoChooser.addOption("Forward and Back Distance",
-            Autos.forwardAndBackDistance(drivetrain, sensors));
-        autoChooser.addOption("Forward Until 10cm Then Turn",
-            Autos.forwardUntil10cmThenTurn(drivetrain, sensors));
-        autoChooser.addOption("Forward Until 10cm Then Turn to 60",
-            Autos.forwardUntil10cmThenTurnToAngle(drivetrain, sensors));
-        autoChooser.addOption("Follow Line",
-            Autos.followLine(drivetrain, sensors));
-
-        SmartDashboard.putData("Auto choices", autoChooser);
-    }
-
-    // =========================================================================
-    // Mode callbacks
-    // =========================================================================
-
-    @Override
-    public void autonomousInit() {
-        m_autoCommand = autoChooser.getSelected();
-        if (m_autoCommand != null) {
-            m_autoCommand.schedule();
-        }
-    }
-
-    @Override
-    public void teleopInit() {
-        if (m_autoCommand != null) {
-            m_autoCommand.cancel();
-        }
-    }
-
-    @Override
-    public void utilityInit() {
-        org.wpilib.command2.CommandScheduler.getInstance().cancelAll();
+        // Controllers (button bindings are made in the OpModes, e.g. DriverTeleop).
+        // CommandGamepad replaced CommandXboxController in 2027: buttons are named
+        // by position (faceDown is A on an Xbox pad), so any gamepad works.
+        driver = new CommandGamepad(Constants.M_CONTROLLER_PORT);
     }
 }
