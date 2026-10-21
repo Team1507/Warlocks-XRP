@@ -73,9 +73,6 @@ public final class Constants {
              */
             public static final double MIN_FORWARD_OUTPUT = 0.65;
 
-            /** Line following never sends less than this to either wheel (2026: Drive.MIN_SPEED). */
-            public static final double MIN_LINE_SPEED = 0.4;
-
             /** Heading-hold PID for driveStraight (power per degree off course). */
             public static final double HEADING_KP = 0.002;
             public static final double HEADING_KI = 0.0;
@@ -94,11 +91,6 @@ public final class Constants {
 
             /** A turn gives up after this long, so a robot stuck against a wall can't freeze an auto (seconds). */
             public static final double MAX_TURN_SECONDS = 3.0;
-
-            /** Line-following PID, on (right reflectance − left reflectance). */
-            public static final double LINE_KP = 0.5;
-            public static final double LINE_KI = 0.0;
-            public static final double LINE_KD = 0.05;
 
             /** Below this wheel speed on both sides, the robot counts as stopped (m/s). */
             public static final double STOPPED_METERS_PER_SECOND = 0.01;
@@ -138,7 +130,24 @@ public final class Constants {
 
     public static final class kSensors {
 
-        /** Reflectance above this means that sensor is over black tape (0.0 = white, 1.0 = black). */
+        // ---- Ultrasonic rangefinder (Lesson 3) ----
+
+        /** isObjectClose() is true at this distance or closer (meters). 15 cm = the course's wall stop. */
+        public static final double CLOSE_METERS = 0.15;
+
+        /** getRangeZone(): closer than this is "NEAR" (meters). */
+        public static final double NEAR_METERS = 0.30;
+
+        /** getRangeZone(): closer than this is "TOO_CLOSE" (meters). */
+        public static final double TOO_CLOSE_METERS = 0.05;
+
+        // ---- Line (reflectance) sensors (Lessons 4 and 5) ----
+
+        /**
+         * Reflectance above this means that sensor is over black tape
+         * (0.0 = white, 1.0 = black).
+         * LESSON 5: measure YOUR floor and tape, then set this between them.
+         */
         public static final double LINE_THRESHOLD = 0.7;
     }
 }

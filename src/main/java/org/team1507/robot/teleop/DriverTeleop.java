@@ -34,6 +34,7 @@ import static org.team1507.robot.Constants.kDrivetrain.kTuning.DRIVER_DEADBAND;
 //   Left bumper      arm up
 //   Right bumper     arm down
 //   A (faceDown)     celebrate: arm up while turning around, then arm down
+//   B, X             yours (Lesson 7)
 //   Back             failsafe: interrupt everything (see RobotBehaviors)
 // ─────────────────────────────────────────────────────────────────────────────
 @Teleop(name = "Driver")
@@ -69,6 +70,12 @@ public final class DriverTeleop implements OpMode {
 
         // An auto can run the same behavior with .celebrate(): one definition.
         robot.driver.faceDown().onTrue(RobotBehaviors.celebrate(robot));
+
+        // ── Your buttons ───────────────────────────────────────────────────
+
+        // LESSON 7: TODO. Bind your commands to buttons here:
+        //   B (faceRight) waves the arm 3 times
+        //   X (faceLeft)  moves the arm to 90°
 
         // ── Failsafe ───────────────────────────────────────────────────────
 

@@ -34,7 +34,7 @@ import org.team1507.robot.Constants.kArm;
 //   "arrived"; it waits a fixed kArm.MOVE_SECONDS instead. (Check on the real XRP
 //   that it's long enough for the full 50°-130° swing.)
 //
-// COMMANDS: goTo(deg), up(), down(). The default (idle) does nothing, because a
+// COMMANDS: goTo(deg), up(), down(), and wave(times), which you write in Lesson 6. The default (idle) does nothing, because a
 // servo holds its last position by itself.
 // ─────────────────────────────────────────────────────────────────────────────
 public final class Arm extends Subsystem1507 {
@@ -88,6 +88,16 @@ public final class Arm extends Subsystem1507 {
             setAngle(degrees);
             coroutine.wait(Seconds.of(kArm.MOVE_SECONDS));
         }).named("Arm.goTo");
+    }
+
+    /**
+     * Waves the arm: up, then down, {@code times} times, then ends.
+     */
+    public Command wave(int times) {
+        return run(coroutine -> {
+            // LESSON 6: TODO. A loop that runs `times` times. Inside it, move the
+            // arm up and wait for it, then down and wait for it.
+        }).named("Arm.wave");
     }
 
     /** Raises the arm. */

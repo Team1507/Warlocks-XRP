@@ -46,14 +46,14 @@ import static org.team1507.robot.Constants.kDrivetrain.kTuning.*;
 //     arcadeDrive()               teleop: the driver's stick, as-is
 //     arcadeDriveWithCorrection() auto straight driving: boosts the forward
 //                                 speed, but NOT the small heading correction
-//     tankDriveLinear()           line following: exact wheel speeds
+//     tankDriveLinear()           exact power to each wheel (your line
+//                                 follower in Lesson 11 uses this)
 //     turnInPlace()               auto turns: no boost at all, so the turn
 //                                 can slow down and settle on the target
 //
 // COMMANDS (Commands v3, bottom of this file):
 //   drive(...)            teleop joystick driving (runs until interrupted)
 //   driveStraight(speed)  holds the starting heading, runs until interrupted
-//   followLine(...)       follows black tape, runs until interrupted
 //   turnByAngle(deg)      turns relative to where it's facing now, then ends
 //   turnToAngle(deg)      turns to an absolute heading, then ends
 //   waitUntilStopped()    holds the motors at 0 until the wheels stop
@@ -293,33 +293,6 @@ public final class Drivetrain extends Subsystem1507 {
                 coroutine.yield();
             }
         }).whenCanceled(this::stopMotors).named("Drivetrain.driveStraight");
-    }
-
-    /**
-     * Follows a black tape line with the two reflectance sensors. Never finishes
-     * on its own: race it against a wait (e.g. the end-of-line marker).
-     *
-     * <p>Steers by speeding up one side, never by slowing the other, so both
-     * wheels stay at or above {@code baseSpeed} and the robot never stalls.
-     * Like driveStraight, the PID is new on every run.
-     *
-     * @param sensors   where to read reflectance (read only, not required)
-     * @param baseSpeed power for both wheels, raised to at least MIN_LINE_SPEED
-     */
-    public Command followLine(Sensors sensors, double baseSpeed) {
-        double base = Math.max(MIN_LINE_SPEED, Math.abs(baseSpeed));
-        return run(coroutine -> {
-            PIDController linePid = new PIDController(LINE_KP, LINE_KI, LINE_KD);
-
-            while (true) {
-                double error = sensors.getRightReflectance() - sensors.getLeftReflectance();
-                double correction = linePid.calculate(error, 0.0);
-                double left  = Math.min(1.0, base + Math.max(0,  correction));
-                double right = Math.min(1.0, base + Math.max(0, -correction));
-                tankDriveLinear(left, right);
-                coroutine.yield();
-            }
-        }).whenCanceled(this::stopMotors).named("Drivetrain.followLine");
     }
 
     /**

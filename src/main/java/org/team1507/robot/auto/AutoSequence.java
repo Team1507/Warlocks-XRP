@@ -12,6 +12,7 @@ import static org.wpilib.units.Units.Seconds;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import org.wpilib.command3.Command;
@@ -27,7 +28,7 @@ import org.team1507.robot.RobotBehaviors;
 // thing that happens. build() turns the list into the command the auto runs.
 //
 //   new AutoSequence()
-//       .driveStraight(0.75).waitUntilRange(0.15)   // drive until 15 cm from a wall
+//       .driveStraight(0.7).waitUntilDistance(1.0)  // drive 1 meter
 //       .turnBy(180)                                // turn around
 //       .waitUntilStopped()
 //       .armUp()
@@ -46,8 +47,8 @@ import org.team1507.robot.RobotBehaviors;
 //   .waitUntilTime(seconds)     until the auto clock reads this (starts at 0 when auto starts)
 //   .waitSeconds(seconds)       for this long
 //   .waitUntilDistance(meters)  until the wheels travel this far (either direction)
-//   .waitUntilRange(meters)     until something is this close in front
-//   .waitUntilMarker(threshold) until both line sensors read above threshold
+//   .waitUntil(() -> ...)       until YOUR condition is true, e.g.
+//                                 .waitUntil(() -> AutoBuilder.robot.sensors.isObjectClose())
 //
 //   Under the hood, a drive step + its wait step is a Commands v3 race:
 //   Command.race(drive, wait). Whichever ends first (the wait; the drive never
@@ -99,10 +100,10 @@ public final class AutoSequence {
         return drive("driveStraight(" + speed + ")", () -> robot().drivetrain.driveStraight(speed));
     }
 
-    /** Follows a black tape line at {@code speed}. */
+    /** Follows a black tape line at {@code speed} (your line follower from Lesson 11, in RobotBehaviors). */
     public AutoSequence followLine(double speed) {
         return drive("followLine(" + speed + ")",
-            () -> robot().drivetrain.followLine(robot().sensors, speed));
+            () -> RobotBehaviors.followLine(robot(), speed));
     }
 
     // =========================================================================
@@ -128,16 +129,13 @@ public final class AutoSequence {
             () -> robot().drivetrain.waitUntilDistance(meters));
     }
 
-    /** Waits until something is {@code meters} or closer in front of the rangefinder. */
-    public AutoSequence waitUntilRange(double meters) {
-        return waitStep("waitUntilRange(" + meters + ")",
-            () -> robot().sensors.waitUntilRange(meters));
-    }
-
-    /** Waits until both reflectance sensors read above {@code threshold}. */
-    public AutoSequence waitUntilMarker(double threshold) {
-        return waitStep("waitUntilMarker(" + threshold + ")",
-            () -> robot().sensors.waitUntilMarker(threshold));
+    /**
+     * Waits until {@code condition} is true. You write the condition, e.g.
+     * {@code .waitUntil(() -> AutoBuilder.robot.sensors.isObjectClose())}
+     * (Lesson 10). After a drive step, it decides when the drive stops.
+     */
+    public AutoSequence waitUntil(BooleanSupplier condition) {
+        return waitStep("waitUntil", () -> Command.waitUntil(condition).named("waitUntil"));
     }
 
     // =========================================================================

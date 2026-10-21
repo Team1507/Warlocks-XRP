@@ -20,13 +20,14 @@ import org.team1507.robot.auto.AutoSequence;
 // YOUR auto starts here. It already shows up in the Driver Station as
 // "My Auto (Template)" and runs; it just doesn't do anything yet.
 //
-// To make it yours:
-//   1. Rename the class (and this file) to say what the auto does, e.g. SquareAuto.
-//   2. Change the @Autonomous name to what drivers should see in the drop-down
-//      (32 characters at most).
-//   3. Fill in build() below, one step per line, top to bottom.
-//   4. Update the comment above build() so it lists your steps.
-//   Need a second auto? Copy this file again. There's no list to register it in.
+// LESSON 8: fill in build() below, one step per line, top to bottom, and update
+// the comment above it so it lists your steps. (Keep this file's name: the
+// Lesson 8 check looks for TemplateAuto.)
+//
+// For every auto after that, COPY this file: rename the copy and its class to
+// say what the auto does (e.g. SquareAuto), and change its @Autonomous name to
+// what drivers should see in the drop-down (32 characters at most). There's no
+// list to register it in.
 //
 // ForwardAndBackAuto.java is a finished example to compare against.
 //
@@ -38,8 +39,8 @@ import org.team1507.robot.auto.AutoSequence;
 //     .waitUntilTime(seconds)       until the auto clock reads this (0 = auto started)
 //     .waitSeconds(seconds)         for this long
 //     .waitUntilDistance(meters)    until the wheels travel this far
-//     .waitUntilRange(meters)       until something is this close in front
-//     .waitUntilMarker(threshold)   until both line sensors read above threshold
+//     .waitUntil(() -> ...)         until your condition is true (Lesson 10), e.g.
+//                                   .waitUntil(() -> AutoBuilder.robot.sensors.isObjectClose())
 //   Actions (not in the middle of a drive):
 //     .turnBy(degrees)              turn relative to now (+ = left)
 //     .turnTo(degrees)              turn to face an absolute heading

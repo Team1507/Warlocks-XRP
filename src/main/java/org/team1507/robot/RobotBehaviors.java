@@ -96,6 +96,30 @@ public final class RobotBehaviors {
     }
 
     // ─────────────────────────────────────────────────────────────────
+    // LESSON 11: FOLLOWING A LINE (sensors + drivetrain)
+    // ─────────────────────────────────────────────────────────────────
+
+    /**
+     * Follows a black tape line using the two line sensors. Runs until
+     * interrupted: in an auto, a wait step ends it (AutoSequence.followLine).
+     *
+     * <p>It requires the drivetrain (it drives) but not Sensors (it only reads them).
+     *
+     * @param speed power for the wheels when going straight [0, 1]
+     */
+    public static Command followLine(Robot robot, double speed) {
+        return Command.requiring(robot.drivetrain).executing(coroutine -> {
+            while (true) {
+                // LESSON 11: TODO. Every loop, look at the line sensors
+                // (robot.sensors.isLeftOnLine(), isRightOnLine()) and decide how
+                // fast each wheel goes. Right now it just drives straight.
+                robot.drivetrain.tankDriveLinear(speed, speed);
+                coroutine.yield();
+            }
+        }).whenCanceled(robot.drivetrain::stopMotors).named("FollowLine");
+    }
+
+    // ─────────────────────────────────────────────────────────────────
     // EXAMPLE: DRIVETRAIN + ARM
     // ─────────────────────────────────────────────────────────────────
 
