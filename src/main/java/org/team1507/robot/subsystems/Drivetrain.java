@@ -89,8 +89,8 @@ public final class Drivetrain extends Subsystem1507 {
 
     private final XRPGyro gyro = new XRPGyro();
 
-    // 2027: XRPMotor is no longer a MotorController, so DifferentialDrive is
-    // given each motor's setThrottle method instead of the motor itself.
+    // 2027 renamed the motor method set() to setThrottle(). DifferentialDrive
+    // is given each motor's setThrottle method, the same way 2026 passed ::set.
     private final DifferentialDrive diffDrive =
         new DifferentialDrive(leftMotor::setThrottle, rightMotor::setThrottle);
 
@@ -207,6 +207,15 @@ public final class Drivetrain extends Subsystem1507 {
 
     /** Right wheel speed (m/s). */
     public double getRightRate() { return rightEncoder.getRate(); }
+
+    /** Power the left motor was last given [-1, 1]. */
+    public double getLeftThrottle()  { return leftMotor.getThrottle(); }
+
+    /**
+     * Power the right motor was last given [-1, 1]. Because the right motor is
+     * inverted, this reads NEGATIVE when the right wheel drives forward.
+     */
+    public double getRightThrottle() { return rightMotor.getThrottle(); }
 
     /** True when both wheels have (almost) stopped turning. */
     public boolean isStopped() {
@@ -405,8 +414,8 @@ public final class Drivetrain extends Subsystem1507 {
         log("RightDistanceMeters", getRightDistance());
         log("LeftRateMps",         getLeftRate());
         log("RightRateMps",        getRightRate());
-        log("LeftThrottle",        leftMotor.getThrottle());
-        log("RightThrottle",       rightMotor.getThrottle());
+        log("LeftThrottle",        getLeftThrottle());
+        log("RightThrottle",       getRightThrottle());
         log("HeadingDegrees",      getHeading());
         log("Stopped",             isStopped());
     }
