@@ -11,6 +11,7 @@ package org.team1507.robot;
 import org.wpilib.command3.button.CommandGamepad;
 
 import org.team1507.lib.core.framework.LoggedRobot;
+import org.team1507.robot.Constants.RobotMap;
 import org.team1507.robot.auto.AutoBuilder;
 import org.team1507.robot.subsystems.Arm;
 import org.team1507.robot.subsystems.Drivetrain;
@@ -71,7 +72,7 @@ public final class Robot extends LoggedRobot {
         // Controllers (button bindings are made in the OpModes, e.g. DriverTeleop).
         // CommandGamepad replaced CommandXboxController in 2027: buttons are named
         // by position (faceDown is A on an Xbox pad), so any gamepad works.
-        driver = new CommandGamepad(Constants.M_CONTROLLER_PORT);
+        driver = new CommandGamepad(RobotMap.DRIVER_CONTROLLER);
 
         // Give auto routines access to the robot and all its subsystems. Last, so
         // everything above exists.

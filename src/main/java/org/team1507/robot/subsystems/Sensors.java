@@ -14,6 +14,8 @@ import org.wpilib.xrp.XRPReflectanceSensor;
 
 import org.team1507.lib.core.framework.Subsystem1507;
 
+import static org.team1507.robot.Constants.kSensors.LINE_THRESHOLD;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Sensors
 //
@@ -32,13 +34,6 @@ import org.team1507.lib.core.framework.Subsystem1507;
 // nothing, so they can run alongside a drive command and end it in a race.
 // ─────────────────────────────────────────────────────────────────────────────
 public final class Sensors extends Subsystem1507 {
-
-    /**
-     * Reflectance above this on either side means that sensor is over the black
-     * line. (The 2026 code had this backwards: it said "on line" over white.
-     * Nothing drove off it, it was only logged, so no robot behavior changes.)
-     */
-    private static final double LINE_THRESHOLD = 0.7;
 
     private final XRPRangefinder       rangefinder = new XRPRangefinder();
     private final XRPReflectanceSensor reflectance = new XRPReflectanceSensor();
@@ -60,7 +55,11 @@ public final class Sensors extends Subsystem1507 {
     /** Right reflectance sensor: 0.0 = white, 1.0 = black. */
     public double getRightReflectance() { return reflectance.getRightReflectanceValue(); }
 
-    /** True if either reflectance sensor is over the black line. */
+    /**
+     * True if either reflectance sensor is over the black line. (The 2026 code
+     * had this backwards: it said "on line" over white. It was only logged, so
+     * no robot behavior depended on it.)
+     */
     public boolean isOnLine() {
         return getLeftReflectance() > LINE_THRESHOLD || getRightReflectance() > LINE_THRESHOLD;
     }

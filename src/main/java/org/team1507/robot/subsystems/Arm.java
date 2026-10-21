@@ -14,7 +14,8 @@ import org.wpilib.command3.Command;
 import org.wpilib.xrp.XRPServo;
 
 import org.team1507.lib.core.framework.Subsystem1507;
-import org.team1507.robot.Constants.ServoArm;
+import org.team1507.robot.Constants.RobotMap;
+import org.team1507.robot.Constants.kArm;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Arm
@@ -30,7 +31,7 @@ import org.team1507.robot.Constants.ServoArm;
 // NO POSITION SENSOR:
 //   A hobby servo doesn't report where it is. getAngle() returns the angle we
 //   last ASKED for, not where the arm really is. So goTo() can't wait for
-//   "arrived"; it waits a fixed MOVE_SECONDS instead. (Check on the real XRP
+//   "arrived"; it waits a fixed kArm.MOVE_SECONDS instead. (Check on the real XRP
 //   that it's long enough for the full 50°-130° swing.)
 //
 // COMMANDS: goTo(deg), up(), down(). The default (idle) does nothing, because a
@@ -38,10 +39,7 @@ import org.team1507.robot.Constants.ServoArm;
 // ─────────────────────────────────────────────────────────────────────────────
 public final class Arm extends Subsystem1507 {
 
-    /** How long goTo waits for the servo to get there (seconds). */
-    private static final double MOVE_SECONDS = 0.5;
-
-    private final XRPServo servo = new XRPServo(ServoArm.SERVO_ARM_PORT);
+    private final XRPServo servo = new XRPServo(RobotMap.ARM_SERVO);
 
     /** The last angle requested, before clamping (logged so you can see when the limits kicked in). */
     private double requestedDegrees = Double.NaN;
@@ -67,14 +65,14 @@ public final class Arm extends Subsystem1507 {
     /** The angle the servo was last told to go to (degrees). See the class comment. */
     public double getAngle() { return servo.getAngle(); }
 
-    /** True if the servo was told to go within 2° of {@code degrees} (after clamping). */
+    /** True if the servo was told to go within kArm.AT_ANGLE_TOLERANCE_DEG of {@code degrees} (after clamping). */
     public boolean isAtAngle(double degrees) {
-        return Math.abs(getAngle() - clamp(degrees)) < 2.0;
+        return Math.abs(getAngle() - clamp(degrees)) < kArm.AT_ANGLE_TOLERANCE_DEG;
     }
 
     /** {@code degrees}, limited to the arm's safe range. */
     public static double clamp(double degrees) {
-        return Math.clamp(degrees, ServoArm.LOWER_LIMIT, ServoArm.UPPER_LIMIT);
+        return Math.clamp(degrees, kArm.MIN_DEG, kArm.MAX_DEG);
     }
 
     // =========================================================================
@@ -88,18 +86,18 @@ public final class Arm extends Subsystem1507 {
     public Command goTo(double degrees) {
         return run(coroutine -> {
             setAngle(degrees);
-            coroutine.wait(Seconds.of(MOVE_SECONDS));
+            coroutine.wait(Seconds.of(kArm.MOVE_SECONDS));
         }).named("Arm.goTo");
     }
 
     /** Raises the arm. */
     public Command up() {
-        return goTo(ServoArm.ARM_UP);
+        return goTo(kArm.UP_DEG);
     }
 
     /** Lowers the arm. */
     public Command down() {
-        return goTo(ServoArm.ARM_DOWN);
+        return goTo(kArm.DOWN_DEG);
     }
 
     // =========================================================================

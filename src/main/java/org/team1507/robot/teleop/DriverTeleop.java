@@ -15,6 +15,8 @@ import org.wpilib.opmode.Teleop;
 import org.team1507.robot.Robot;
 import org.team1507.robot.RobotBehaviors;
 
+import static org.team1507.robot.Constants.kDrivetrain.kTuning.DRIVER_DEADBAND;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // DriverTeleop
 //
@@ -37,19 +39,14 @@ import org.team1507.robot.RobotBehaviors;
 @Teleop(name = "Driver")
 public final class DriverTeleop implements OpMode {
 
-    /**
-     * Stick input below this counts as zero. Sticks never rest at exactly 0,
-     * and without a deadband that small "drift" slowly drives the robot.
-     */
-    private static final double DRIVER_DEADBAND = 0.12;
-
     /** WPILib passes in the Robot instance when this mode is selected. */
     public DriverTeleop(Robot robot) {
 
         // ── Driving ────────────────────────────────────────────────────────
 
         // Joystick driving replaces the drivetrain's idle default while this mode
-        // is selected. The deadband is applied FIRST, before anything else scales
+        // is selected. Sticks never rest at exactly 0, so DRIVER_DEADBAND
+        // (Constants) treats small values as 0. The deadband is applied FIRST, before anything else scales
         // the value, so drift is removed instead of being amplified.
         //
         // Both axes are negated. A gamepad reads up as negative Y and right as

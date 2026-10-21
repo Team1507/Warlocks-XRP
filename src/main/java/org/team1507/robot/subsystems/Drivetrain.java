@@ -21,7 +21,9 @@ import org.wpilib.xrp.XRPGyro;
 import org.wpilib.xrp.XRPMotor;
 
 import org.team1507.lib.core.framework.Subsystem1507;
-import org.team1507.robot.Constants;
+import org.team1507.robot.Constants.RobotMap;
+
+import static org.team1507.robot.Constants.kDrivetrain.kTuning.*;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Drivetrain
@@ -72,46 +74,18 @@ public final class Drivetrain extends Subsystem1507 {
     private static final double WHEEL_DIAMETER_METERS = 0.060;
     private static final double METERS_PER_COUNT = Math.PI * WHEEL_DIAMETER_METERS / COUNTS_PER_WHEEL_REV;
 
-    /** Below this wheel speed (m/s) on both sides, the robot counts as stopped. */
-    private static final double STOPPED_METERS_PER_SECOND = 0.01;
-
-    /** arcadeDriveWithCorrection boosts any forward speed to at least this much power. */
-    private static final double MIN_FORWARD_OUTPUT = 0.65;
-
-    // -------------------------------------------------------------------------
-    // Tuning (moves to Constants.kDrivetrain.kTuning in a later commit)
-    // -------------------------------------------------------------------------
-
-    /** Heading-hold PID for driveStraight. */
-    private static final double HEADING_KP = 0.002;
-    private static final double HEADING_KI = 0.0;
-    private static final double HEADING_KD = 0.001;
-
-    /** Turn commands: power per degree of error, and the floor and ceiling on that power. */
-    private static final double TURN_KP = 0.015;
-    private static final double MIN_TURN_SPEED = 0.5;
-    private static final double MAX_TURN_SPEED = 0.9;
-
-    /** A turn is done when the heading is within this many degrees of the target. */
-    private static final double TURN_TOLERANCE_DEG = 5.0;
-
-    /** A turn gives up after this long, so a robot stuck against a wall can't freeze an auto. */
-    private static final double MAX_TURN_SECONDS = 3.0;
-
-    /** Line-following PID, on (right reflectance − left reflectance). */
-    private static final double LINE_KP = 0.5;
-    private static final double LINE_KI = 0.0;
-    private static final double LINE_KD = 0.05;
+    // Tuning knobs (PID gains, turn speeds, the forward boost) are in
+    // Constants.kDrivetrain.kTuning.
 
     // -------------------------------------------------------------------------
     // Hardware
     // -------------------------------------------------------------------------
 
-    private final XRPMotor leftMotor  = new XRPMotor(0);
-    private final XRPMotor rightMotor = new XRPMotor(1);
+    private final XRPMotor leftMotor  = new XRPMotor(RobotMap.LEFT_MOTOR);
+    private final XRPMotor rightMotor = new XRPMotor(RobotMap.RIGHT_MOTOR);
 
-    private final Encoder leftEncoder  = new Encoder(4, 5);
-    private final Encoder rightEncoder = new Encoder(6, 7);
+    private final Encoder leftEncoder  = new Encoder(RobotMap.LEFT_ENCODER_A, RobotMap.LEFT_ENCODER_B);
+    private final Encoder rightEncoder = new Encoder(RobotMap.RIGHT_ENCODER_A, RobotMap.RIGHT_ENCODER_B);
 
     private final XRPGyro gyro = new XRPGyro();
 
@@ -198,7 +172,7 @@ public final class Drivetrain extends Subsystem1507 {
     }
 
     /**
-     * Boosts small forward speeds to at least {@link #MIN_FORWARD_OUTPUT} so the
+     * Boosts small forward speeds to at least MIN_FORWARD_OUTPUT (Constants) so the
      * XRP's motors overcome static friction. Below 0.01 counts as stop.
      */
     private static double boostForward(double input) {
@@ -315,10 +289,10 @@ public final class Drivetrain extends Subsystem1507 {
      * Like driveStraight, the PID is new on every run.
      *
      * @param sensors   where to read reflectance (read only, not required)
-     * @param baseSpeed power for both wheels, raised to at least Constants.Drive.MIN_SPEED
+     * @param baseSpeed power for both wheels, raised to at least MIN_LINE_SPEED
      */
     public Command followLine(Sensors sensors, double baseSpeed) {
-        double base = Math.max(Constants.Drive.MIN_SPEED, Math.abs(baseSpeed));
+        double base = Math.max(MIN_LINE_SPEED, Math.abs(baseSpeed));
         return run(coroutine -> {
             PIDController linePid = new PIDController(LINE_KP, LINE_KI, LINE_KD);
 
